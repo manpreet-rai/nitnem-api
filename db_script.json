@@ -1,0 +1,184 @@
+db.banis.aggregate([
+  {
+    "$match": {
+      "baniID": 2
+    }
+  },
+  {
+    $group: {
+      _id: "$paragraph",
+      gurmukhis: {
+        "$push": "$gurmukhi"
+      },
+      gurmukhiUnis: {
+          "$push": "$gurmukhiUni"
+      },
+      englishs: {
+          "$push": "$english"
+      },
+      punjabis: {
+          "$push": "$punjabi"
+      },
+      punjabiUnis: {
+          "$push": "$punjabiUni"
+      },
+      hindiUnis: {
+          "$push": "$hindiUni"
+      },
+      spanishs: {
+          "$push": "$spanish"
+      },
+      headers: {
+          "$push": "$header"
+      },
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      id: "$_id",
+      baniID: { $literal: 2},
+      gurmukhi: {
+        $trim: {
+          input: {
+            $reduce: {
+              "input": "$gurmukhis",
+              "initialValue": "",
+              "in": {
+                $concat: [
+                  "$$value",
+                  " ",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        }
+      },
+      gurmukhiUni: {
+        $trim: {
+          input: {
+            $reduce: {
+              "input": "$gurmukhiUnis",
+              "initialValue": "",
+              "in": {
+                $concat: [
+                  "$$value",
+                  " ",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        }
+      },
+      english: {
+        $trim: {
+          input: {
+            $reduce: {
+              "input": "$englishs",
+              "initialValue": "",
+              "in": {
+                $concat: [
+                  "$$value",
+                  " ",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        }
+      },
+      punjabi: {
+        $trim: {
+          input: {
+            $reduce: {
+              "input": "$punjabis",
+              "initialValue": "",
+              "in": {
+                $concat: [
+                  "$$value",
+                  " ",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        }
+      },
+      punjabiUni: {
+        $trim: {
+          input: {
+            $reduce: {
+              "input": "$punjabiUnis",
+              "initialValue": "",
+              "in": {
+                $concat: [
+                  "$$value",
+                  " ",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        }
+      },
+      hindiUni: {
+        $trim: {
+          input: {
+            $reduce: {
+              "input": "$hindiUnis",
+              "initialValue": "",
+              "in": {
+                $concat: [
+                  "$$value",
+                  " ",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        }
+      },
+      spanish: {
+        $trim: {
+          input: {
+            $reduce: {
+              "input": "$spanishs",
+              "initialValue": "",
+              "in": {
+                $concat: [
+                  "$$value",
+                  " ",
+                  "$$this"
+                ]
+              }
+            }
+          }
+        }
+      },
+      header: {
+        $reduce: {
+          "input": "$headers",
+          "initialValue": 1,
+          "in": {
+            $multiply: [
+              "$$value",
+              "$$this"
+            ]
+          }
+        }
+      }
+    }
+  },
+  {
+    $sort: {
+      id: 1
+    }
+  },
+  {
+    $merge: {
+      into: "banis_merged"
+    }
+  }
+])
